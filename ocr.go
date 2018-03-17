@@ -2,29 +2,35 @@ package main
 
 import (
 	"fmt"
-	"gosseract"
+	g "gosseract"
 )
 
 func main() {
-	client := gosseract.NewClient()
+	client := g.NewClient()
 	defer client.Close()
-	client.SetImage("~/Documents/ocr/test.jpg")
+	client.SetImage("~/Documents/go/src/ocr/test.jpg")
 
+	rects := []g.Rectangle{
+		g.Rectangle{0, 0, 650, 100},
+		g.Rectangle{0, 100, 650, 100},
+		g.Rectangle{183, 8, 73, 38},
+	}
+	client.SetRectangles(rects)
+	regions, _ := client.TextRegions()
+	for _, region := range regions {
+		fmt.Println("[%d, %d, %d, %d] = \"%s\"",
+			region.Region.Left,
+			region.Region.Top,
+		)
+	}
+	fmt.Println(regions[0].Text)
 
-	fmt.Println("about to call SetRectangle()")
-	client.SetRectangle(100,100,20,20)
-	text, _ := client.Text()
-	fmt.Println(text)
-
-	a := box{topLeft: point{1,1}}
-	fmt.Println(a)
-	
 }
 
 type box struct {
-	topLeft point
-	topRight point
-	bottomLeft point
+	topLeft     point
+	topRight    point
+	bottomLeft  point
 	bottomRight point
 }
 
